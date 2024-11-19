@@ -8,7 +8,7 @@ int main() {
             {.home_name = "Germany", .away_name = "France", .home_score = 2, .away_score = 2},
             {.home_name = "Uruguay", .away_name = "Italy", .home_score = 6, .away_score = 6},
             {.home_name = "Argentina", .away_name = "Australia", .home_score = 3, .away_score = 1},
-            //            {.home_name = "NaszeChłopaki", .away_name = "*******!!!", .home_score = std::numeric_limits<int>().max(), .away_score = 0},
+            //{.home_name = "NaszeChłopaki", .away_name = "*******!!!", .home_score = std::numeric_limits<int>().max(), .away_score = 0},
     };
     sbd::Scoreboard scoreboard;
     scoreboard.summary();
