@@ -2,6 +2,8 @@
 #include <iostream>
 #include <limits>
 #include <map>
+#include <optional>
+#include <ranges>
 #include <string>
 #include <utility>
 #include <vector>
@@ -21,7 +23,7 @@ struct Match {
 
     bool operator<(const Match& other) const {
         if (total_score() != other.total_score()) {
-            return total_score() < other.total_score();
+            return total_score() > other.total_score();
         }
         return id > other.id;
     }
@@ -34,36 +36,41 @@ std::ostream& operator<<(std::ostream& os, const Match& match) {
 
 class Scoreboard {
 public:
-    MatchId start_match(std::string home_name, std::string away_name) {
+    std::optional<MatchId> start_match(std::string home_name, std::string away_name) {
+        if (!is_match_valid(home_name, away_name))
+            return std::nullopt;
+
         Match match{next_id, std::move(home_name), std::move(away_name)};
         matches.insert({next_id, match});
         return next_id++;
     }
 
-    void update_match(MatchId id, uint64_t home_score, uint64_t away_score) {
+    bool is_match_valid(std::string home_name, std::string away_name) {
+        for (const auto& [_, match]: matches) {
+            if (match.home_name == home_name || match.home_name == away_name || match.away_name == home_name || match.away_name == away_name)
+                return false;
+        }
+        return true;
+    }
+
+    bool update_match(MatchId id, uint64_t home_score, uint64_t away_score) {
         if (auto match_itr = matches.find(id); match_itr != matches.end()) {
             match_itr->second.home_score = home_score;
             match_itr->second.away_score = away_score;
         }
     }
 
-    void remove_match(MatchId id) {
+    void end_match(MatchId id) {
         matches.erase(id);
     }
 
-    void end_match(MatchId id) {
-        auto match = matches.find(id);
-        if (match != matches.end()) {
-            match->second.home_score = 0;
-            match->second.away_score = 0;
-        }
-    }
-
     auto summary() const {
-        std::vector<std::pair<MatchId, Match>> summary(matches.cbegin(), matches.cend());
+        using std::ranges::views::values;
+        std::vector<Match> summary(values(matches).begin(), values(matches).end());
         std::sort(summary.begin(), summary.end());
 
-        for (const auto& [_, match]: summary) {
+        // for debugging
+        for (const auto& match: summary) {
             std::cout << match << std::endl;
         }
 
@@ -89,7 +96,7 @@ int main() {
 
     for (const auto& match: test_matches1) {
         auto id = scoreboard.start_match(match.home_name, match.away_name);
-        scoreboard.update_match(id, match.home_score, match.away_score);
+        scoreboard.update_match(*id, match.home_score, match.away_score);
     }
     scoreboard.summary();
 
@@ -99,7 +106,7 @@ int main() {
 
 
     std::cout << std::endl;
-    scoreboard.remove_match(0);// remove mexico vs canada
+    scoreboard.end_match(0);// remove mexico vs canada
     scoreboard.summary();
     return 0;
 }
