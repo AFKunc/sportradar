@@ -26,7 +26,6 @@ std::ostream& operator<<(std::ostream& os, const detail::Match& match) {
     return os;
 }
 
-
 std::optional<MatchId> Scoreboard::start_match(std::string home_name, std::string away_name) {
     if (!is_match_valid(home_name, away_name))
         return std::nullopt;

@@ -12,3 +12,7 @@
 - `update_match(...)` with a non-existent `MatchId` doesn't alter the container.
 - `update_match(...)` with a lower score is permitted, in case the referee changes his mind about calling the goal after it was already updated.
 - `update_match(...)` with a negative number results in an implicit conversion to its positive bit-equivalent. This is the only case of "undefined behavior", caused by breaking of the contract implied by the function's signature. 
+
+### Tests:
+- The tests are written the way I normally work - I usually have a main function where I test new classes/functionality as I move along, alternating between adding a bit of code and testing it informally.
+- usually, once I'm done I write a formal test suite in something like GTest/Pytest, it would be overkill for the purposes of this test.

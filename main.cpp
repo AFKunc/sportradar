@@ -8,7 +8,6 @@ int main() {
             {.home_name = "Germany", .away_name = "France", .home_score = 2, .away_score = 2},
             {.home_name = "Uruguay", .away_name = "Italy", .home_score = 6, .away_score = 6},
             {.home_name = "Argentina", .away_name = "Australia", .home_score = 3, .away_score = 1},
-            //{.home_name = "NaszeChłopaki", .away_name = "*******!!!", .home_score = std::numeric_limits<int>().max(), .away_score = 0},
     };
     sbd::Scoreboard scoreboard;
     scoreboard.summary();
@@ -23,9 +22,27 @@ int main() {
     scoreboard.update_match(1, 11, 2);// update mexico vs canada
     scoreboard.summary();
 
+    // try to add different combinations of team names that are already playing
+    auto same_home= test_matches1[0];
+    same_home.away_name = "new_away";
+    auto none = scoreboard.start_match(same_home.home_name, same_home.away_name);  //no-op
+    std::cout << (none == std::nullopt) << std::endl;
+
+    auto same_away= test_matches1[0];
+    same_away.home_name = "new_home";
+    none = scoreboard.start_match(same_away.home_name, same_away.away_name); //no-op
+    std::cout << (none == std::nullopt) << std::endl;
+    scoreboard.summary();
+    std::cout << "-----" << std::endl;
 
     std::cout << std::endl;
     scoreboard.end_match(0);// remove mexico vs canada
     scoreboard.summary();
+    std::cout << "-----" << std::endl;
+
+    scoreboard.update_match(-1, 0, 0);
+    scoreboard.end_match(-1); // no-op
+    scoreboard.summary();
+
     return 0;
 }
