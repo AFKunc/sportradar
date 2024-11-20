@@ -7,6 +7,7 @@
 #include <vector>
 #include <include/scoreboard.hpp>
 
+using namespace sbd;
 
 uint64_t detail::Match::total_score() const {
     return home_score + away_score;
@@ -26,7 +27,7 @@ std::ostream& operator<<(std::ostream& os, const detail::Match& match) {
 }
 
 
-std::optional<MatchId> sbd::Scoreboard::start_match(std::string home_name, std::string away_name) {
+std::optional<MatchId> Scoreboard::start_match(std::string home_name, std::string away_name) {
     if (!is_match_valid(home_name, away_name))
         return std::nullopt;
 
@@ -35,7 +36,7 @@ std::optional<MatchId> sbd::Scoreboard::start_match(std::string home_name, std::
     return next_id++;
 }
 
-bool sbd::Scoreboard::is_match_valid(std::string home_name, std::string away_name) const {
+bool Scoreboard::is_match_valid(std::string home_name, std::string away_name) const {
     for (const auto& [_, match]: matches) {
         if (match.home_name == home_name || match.home_name == away_name || match.away_name == home_name || match.away_name == away_name)
             return false;
@@ -43,7 +44,7 @@ bool sbd::Scoreboard::is_match_valid(std::string home_name, std::string away_nam
     return true;
 }
 
-bool sbd::Scoreboard::update_match(MatchId id, uint64_t home_score, uint64_t away_score) {
+bool Scoreboard::update_match(MatchId id, uint64_t home_score, uint64_t away_score) {
     if (auto match_itr = matches.find(id); match_itr != matches.end()) {
         match_itr->second.home_score = home_score;
         match_itr->second.away_score = away_score;
@@ -52,11 +53,11 @@ bool sbd::Scoreboard::update_match(MatchId id, uint64_t home_score, uint64_t awa
     return false;
 }
 
-void sbd::Scoreboard::end_match(MatchId id) {
+void Scoreboard::end_match(MatchId id) {
     matches.erase(id);
 }
 
-std::vector<detail::Match> sbd::Scoreboard::summary() const {
+std::vector<detail::Match> Scoreboard::summary() const {
     using std::ranges::views::values;
 
     std::vector<detail::Match> summary(values(matches).begin(), values(matches).end());
